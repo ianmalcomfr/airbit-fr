@@ -4,7 +4,8 @@
     "description": "Extension française pour piloter le drone Air:bit avec une carte micro:bit (gyroscope, stabilisation PID, moteurs, batterie).",
     "dependencies": {
         "core": "*",
-        "microbit-pxt-i2cpins": "github:bsiever/microbit-pxt-i2cpins#v0.0.6"
+        "microbit-pxt-i2cpins": "github:bsiever/microbit-pxt-i2cpins#v0.0.6",
+        "radio": "*"
     },
     "files": [
         "airbit.ts",

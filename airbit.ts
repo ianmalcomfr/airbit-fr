@@ -8,7 +8,7 @@
  */
 
 //% weight=100 color=#0fbc11 icon="" block="Air:bit"
-//% groups=['Démarrage', 'Vol', 'Réglages PID', 'Batterie', 'Écran', 'Avancé']
+//% groups=['Démarrage', 'Vol', 'Réglages PID', 'Batterie', 'Écran', 'Télémétrie', 'Avancé']
 namespace airbit {
 
     export enum Moteur {
@@ -759,5 +759,41 @@ namespace airbit {
         accX = pins.i2cReadNumber(IMU1_ADRESSE, NumberFormat.Int16BE, true)
         accY = pins.i2cReadNumber(IMU1_ADRESSE, NumberFormat.Int16BE, true)
         accZ = pins.i2cReadNumber(IMU1_ADRESSE, NumberFormat.Int16BE, false)
+    }
+
+    /**
+     * Télémétrie : envoie les mesures de vol à la télécommande par radio
+     * (angles x10, gaz, moteurs A à D, batterie en mV, moteurs prêts).
+     * À placer dans une boucle « toujours » suivie d'une pause d'environ 150 ms.
+     * Le groupe radio doit être le même que celui de la télécommande.
+     * @param moteursPrets vrai si les moteurs sont autorisés à tourner
+     */
+    //% blockId=airbit_envoyer_telemetrie
+    //% block="envoyer les mesures de vol à la télécommande moteurs prêts $moteursPrets"
+    //% group='Télémétrie' weight=100
+    export function envoyerTelemetrie(moteursPrets: boolean) {
+        // on attend la fin du démarrage (groupe radio réglé, calibration)
+        if (input.runningTime() < 3000) {
+            return
+        }
+        radio.sendValue("rou", Math.round(angleRoulis * 10))
+        basic.pause(10)
+        radio.sendValue("tan", Math.round(angleTangage * 10))
+        basic.pause(10)
+        radio.sendValue("lac", Math.round(angleLacet * 10))
+        basic.pause(10)
+        radio.sendValue("gaz", gazValeur)
+        basic.pause(10)
+        radio.sendValue("ma", moteurA)
+        basic.pause(10)
+        radio.sendValue("mb", moteurB)
+        basic.pause(10)
+        radio.sendValue("mc", moteurC)
+        basic.pause(10)
+        radio.sendValue("md", moteurD)
+        basic.pause(10)
+        radio.sendValue("bat", batterieLissee)
+        basic.pause(10)
+        radio.sendValue("mp", moteursPrets ? 1 : 0)
     }
 }
